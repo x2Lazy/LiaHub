@@ -351,7 +351,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 		commandBar:CaptureFocus()
 	end
 	
-	if inp.KeyCode == Enum.KeyCode.Space and quicktype.Text ~= nil and quicktype.Text ~= "" then
+	if inp.KeyCode == Enum.KeyCode.LeftShift and quicktype.Text ~= nil and quicktype.Text ~= "" then
 		for i = 1, #commands do
 			if string.find(quicktype.Text, commands[i]) then
 				commandBar.Text = commands[i]
