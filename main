@@ -351,11 +351,15 @@ UIS.InputBegan:Connect(function(inp,gPE)
 		commandBar:CaptureFocus()
 	end
 	
-	if inp.KeyCode==Enum.KeyCode.Space and quicktype.Text~="" then
-		for i=1,#commands do
-			commandBar.Text=string.find(quicktype.Text,commands[i])
+	if inp.KeyCode == Enum.KeyCode.Space and quicktype.Text ~= nil and quicktype.Text ~= "" then
+		for i = 1, #commands do
+			if string.find(quicktype.Text, commands[i]) then
+				commandBar.Text = commands[i]
+				break
+			end
 		end
 	end
+
 	
 	if inp.KeyCode==Enum.KeyCode.Return and commandBar.Text~="" then
 		local text=string.lower(commandBar.Text)
@@ -407,6 +411,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 					
 			elseif string.find(text,commands[6]) then
 				
+				plr.Character["Humanoid"]["PlatformStand"]=false
 				
 				local speed=10
 				
