@@ -1,0 +1,498 @@
+--Beta v1
+
+if _G.AlreadyLoaded==true then
+	return error("already loaded")
+end
+
+function randomizeText()
+	local length = math.random(50,70)
+	local array = {}
+	for i = 1, length do
+		array[i] = string.char(math.random(32, 126))
+	end
+	return table.concat(array)
+end
+
+local plr=game:GetService("Players").LocalPlayer
+local ts=game:GetService("TweenService")
+local UIS=game:GetService("UserInputService")
+local mouse=plr:GetMouse()
+local tpService=game:GetService("TeleportService")
+
+local commands={
+	"walkspeed",
+	"jumppower",
+	"tpto",
+	"clicktp",
+	"respawn",
+	"fly",
+	"unfly",
+	"rejoin",
+	"thirdperson",
+	"firstperson"
+}
+
+local commandInfo={
+	" [speed] (ws)",
+	" [power] (jp)",
+	" [player] (to)",
+	" (ctp)",
+	" (re)",
+	" [speed]",
+	" [speed]",
+	" (rj)",
+	" (thirdp)",
+	" (firstp)"
+}
+
+local LiaHub=Instance.new("ScreenGui")
+local introLogo=Instance.new("ImageLabel",LiaHub)
+local introLogo_Corner=Instance.new("UICorner",introLogo)
+local introLogoName=Instance.new("TextLabel",LiaHub)
+local commandBar=Instance.new("TextBox",LiaHub)
+local commandBar_Corner,commandBar_Stroke=Instance.new("UICorner",commandBar),Instance.new("UIStroke",commandBar)
+local commandSection=Instance.new("ScrollingFrame",LiaHub)
+local commandSectionUiList=Instance.new("UIListLayout",commandSection)
+local commandSection_Corner,commandSection_Stroke=Instance.new("UICorner",commandSection),Instance.new("UIStroke",commandSection)
+local commandSectionTitle=Instance.new("TextLabel",commandSection)
+local commandSectionTitlePos=Instance.new("IntValue",commandSectionTitle)
+local keybindsHelp=Instance.new("TextLabel",commandBar)
+local quicktype=Instance.new("TextLabel",commandBar)
+
+
+_G.AlreadyLoaded=true
+
+if not game:GetService("CoreGui") then
+	print("playergui")
+	LiaHub.Parent=plr.PlayerGui
+else
+	print("coregui")
+	local s,e=pcall(function()
+		LiaHub.Parent=game:GetService("CoreGui")
+	end)
+	
+	if s then
+		print("welcome to lia hub")
+	else
+		print(e)
+		LiaHub.Parent=plr.PlayerGui
+	end
+end
+
+LiaHub.Name=randomizeText().."@"
+LiaHub.ResetOnSpawn=false
+
+introLogo.Name="IntroLogo"
+introLogo.AnchorPoint=Vector2.new(.5,.5)
+introLogo.Position=UDim2.new(.5,0,.5,0)
+introLogo.Size=UDim2.new(0,100,0,100)
+introLogo.BackgroundTransparency=1
+introLogo.ImageTransparency=1
+introLogo.Image="rbxassetid://13991323244"
+
+introLogo_Corner.CornerRadius=UDim.new(1,1)
+
+introLogoName.Name="IntroName"
+introLogoName.AnchorPoint=Vector2.new(.5,.5)
+introLogoName.Position=UDim2.new(0.612, 0,0.5, 0)
+introLogoName.Size=UDim2.new(0, 312,0, 50)
+introLogoName.BackgroundTransparency=1
+introLogoName.TextTransparency=1
+introLogoName.Text="Lia Hub"
+introLogoName.TextColor3=Color3.fromRGB(255, 255, 255)
+introLogoName.TextScaled=true
+introLogoName.FontFace.Bold=true
+introLogoName.Font=Enum.Font.Merriweather
+introLogoName.TextXAlignment=Enum.TextXAlignment.Left
+
+commandBar.Name="CommandBar"
+commandBar.AnchorPoint=Vector2.new(.5,.5)
+commandBar.BackgroundTransparency=1
+commandBar.BackgroundColor3=Color3.fromRGB(0, 0, 0)
+commandBar.Position=UDim2.new(0.881, 0,0.931, 0)
+commandBar.Size=UDim2.new(0,176,0,20)
+commandBar.TextScaled=true
+commandBar.FontFace.Bold=true
+commandBar.Font=Enum.Font.Merriweather
+commandBar.PlaceholderText=""
+commandBar.Text=""
+commandBar.TextColor3=Color3.fromRGB(255,255,255)
+
+commandBar_Stroke.Color=Color3.fromRGB(0, 0, 0)
+commandBar_Stroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+commandBar_Stroke.Transparency=1
+
+commandSection.Name="CommandSection"
+commandSection.AnchorPoint=Vector2.new(.5,.5)
+commandSection.BackgroundTransparency=1
+commandSection.BackgroundColor3=Color3.fromRGB(0, 0, 0)
+commandSection.Position=UDim2.new(0.702, 0,0.849, 0)
+commandSection.Size=UDim2.new(0, 135,0, 128)
+commandSection.ScrollBarImageTransparency=1
+
+commandSection_Stroke.Color=Color3.fromRGB(0, 0, 0)
+commandSection_Stroke.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
+commandSection_Stroke.Transparency=1
+
+commandSectionUiList.SortOrder=Enum.SortOrder.LayoutOrder
+
+commandSectionTitle.Name="Title"
+commandSectionTitle.AnchorPoint=Vector2.new(.5,.5)
+commandSectionTitle.BackgroundTransparency=1
+commandSectionTitle.Size=UDim2.new(0,124,0,18)
+commandSectionTitle.Text="Commands"
+commandSectionTitle.TextColor3=Color3.fromRGB(255,255,255)
+commandSectionTitle.Font=Enum.Font.Merriweather
+commandSectionTitle.FontFace.Bold=true
+commandSectionTitle.TextTransparency=1
+
+commandSectionTitlePos.Name="Pos"
+commandSectionTitlePos.Value=1
+
+
+keybindsHelp.Name="KeybindHelp"
+keybindsHelp.BackgroundTransparency=1
+keybindsHelp.AnchorPoint=Vector2.new(.5,.5)
+keybindsHelp.Position=UDim2.new(0.5, 0,1.4, 0)
+keybindsHelp.Size=UDim2.new(0, 140,0, 20)
+keybindsHelp.Font=Enum.Font.Merriweather
+keybindsHelp.FontFace.Bold=true
+keybindsHelp.TextColor3=Color3.fromRGB(255,255,255)
+keybindsHelp.TextTransparency=1
+keybindsHelp.Text="press q to open commands list"
+keybindsHelp.TextScaled=true
+
+quicktype.Name="QuickSearch"
+quicktype.BackgroundTransparency=1
+quicktype.AnchorPoint=Vector2.new(.5,.5)
+quicktype.Position=UDim2.new(0.497, 0,-1, 0)
+quicktype.Size=UDim2.new(0, 140,0, 20)
+quicktype.Font=Enum.Font.Merriweather
+quicktype.FontFace.Bold=true
+quicktype.TextColor3=Color3.fromRGB(255,255,255)
+quicktype.TextTransparency=0
+quicktype.Text=""
+quicktype.TextScaled=true
+
+
+task.wait(1)
+
+local fadeInIntroLogo=ts:Create(introLogo,TweenInfo.new(1),{ImageTransparency=0})
+fadeInIntroLogo:Play()
+
+task.wait(1)
+
+local moveIntroLogo=ts:Create(introLogo,TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Position=UDim2.new(0.382, 0,0.5, 0)})
+moveIntroLogo:Play()
+task.wait(.1)
+local fadeInLogoName=ts:Create(introLogoName,TweenInfo.new(2),{TextTransparency=0})
+fadeInLogoName:Play()
+
+task.wait(2)
+
+for i,introGuis in pairs(LiaHub:GetChildren()) do
+	if introGuis.Name=="IntroLogo" then
+		local fadeOutGui=ts:Create(introGuis,TweenInfo.new(2),{ImageTransparency=1})
+		fadeOutGui:Play()
+	elseif introGuis.Name=="IntroName" then
+		local fadeOutGui=ts:Create(introGuis,TweenInfo.new(2),{TextTransparency=1})
+		fadeOutGui:Play()
+	end
+end
+
+task.wait(2)
+
+for i,commandBarGui in pairs(LiaHub:GetChildren()) do
+	if commandBarGui.Name=="CommandBar" then
+		local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{BackgroundTransparency=.65})
+		fadeIn:Play()
+		
+		for i,c in pairs(commandBarGui:GetChildren()) do
+			if c:IsA("UIStroke") then
+				local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{Transparency=0})
+				fadeIn:Play()
+			end
+		end
+	end
+end
+
+commandBar.PlaceholderText="Write In A Command"
+
+
+commandBar.MouseEnter:Connect(function()
+	local fadeInKeybind=ts:Create(keybindsHelp,TweenInfo.new(1),{TextTransparency=0})
+	fadeInKeybind:Play()
+end)
+commandBar.MouseLeave:Connect(function()
+	local fadeOutKeybind=ts:Create(keybindsHelp,TweenInfo.new(1),{TextTransparency=1})
+	fadeOutKeybind:Play()
+end)
+
+local openCommandSection=false
+
+local function sort(a, b)
+	local posA = a:FindFirstChild("Pos")
+	local posB = b:FindFirstChild("Pos")
+	
+	if posA and posB then
+		return posA.Value < posB.Value
+	else
+		return false
+	end
+end
+
+local c={}
+for i=1,#commands do
+	local newCommand=Instance.new("TextLabel")
+	local newCommandPos=Instance.new("IntValue",newCommand)
+	
+	newCommandPos.Name="Pos"
+	newCommandPos.Value=i+1
+	
+	newCommand.AnchorPoint=Vector2.new(.5,.5)
+	newCommand.BackgroundTransparency=1
+	newCommand.Size=UDim2.new(0,124,0,18)
+	newCommand.Name=commands[i]
+	newCommand.Text=commands[i]..commandInfo[i]
+	newCommand.TextColor3=Color3.fromRGB(255,255,255)
+	newCommand.Font=Enum.Font.Merriweather
+	newCommand.FontFace.Bold=true
+	newCommand.TextTransparency=1
+	newCommand.TextStrokeTransparency=0
+	
+	table.insert(c,newCommand)
+end
+
+table.sort(c, sort)
+
+for i=1,#c do
+	print(c[i].Name)
+	c[i].Parent=commandSection
+end
+
+
+function walkspeed()
+	print("walkspeed")
+end
+
+task.spawn(function()
+	while task.wait() do
+		if commandBar.Text~="" then
+			local searchText = string.lower(commandBar.Text)
+			local matchingCommand = nil
+
+			for i = 1, #commands do
+				if string.sub(commands[i], 1, #searchText) == searchText then
+					matchingCommand=commands[i]
+					break
+				end
+			end
+
+			if matchingCommand then
+				local commandIndex = nil
+				for i = 1,#commands do
+					if commands[i]==matchingCommand then
+						commandIndex=i
+						break
+					end
+				end
+
+				if commandIndex then
+					quicktype.Text=matchingCommand..commandInfo[commandIndex]
+				end
+			end
+		else
+			quicktype.Text=""
+		end
+	end
+end)
+
+
+UIS.InputBegan:Connect(function(inp,gPE)
+	if not gPE and inp.KeyCode==Enum.KeyCode.Q then
+		if openCommandSection==false then
+			openCommandSection=true
+			for i,v in pairs(LiaHub:GetChildren()) do
+				if v.Name=="CommandSection" then
+					local fadeIn=ts:Create(v,TweenInfo.new(1),{BackgroundTransparency=.65})
+					fadeIn:Play()
+					for i,c in pairs(v:GetChildren()) do
+						if c:IsA("UIStroke") then
+							local fadeIn=ts:Create(c,TweenInfo.new(1),{Transparency=0})
+							fadeIn:Play()
+						elseif c:IsA("TextLabel") then
+							local fadeIn=ts:Create(c,TweenInfo.new(1),{TextTransparency=0})
+							fadeIn:Play()
+						end
+					end
+				end
+			end
+		else
+			openCommandSection=false
+			for i,v in pairs(LiaHub:GetChildren()) do
+				if v.Name=="CommandSection" then
+					local fadeIn=ts:Create(v,TweenInfo.new(1),{BackgroundTransparency=1})
+					fadeIn:Play()
+					for i,c in pairs(v:GetChildren()) do
+						if c:IsA("UIStroke") then
+							local fadeIn=ts:Create(c,TweenInfo.new(1),{Transparency=1})
+							fadeIn:Play()
+						elseif c:IsA("TextLabel") then
+							local fadeIn=ts:Create(c,TweenInfo.new(1),{TextTransparency=1})
+							fadeIn:Play()
+						end
+					end
+				end
+			end
+		end
+	end
+	
+	if not gPE and inp.KeyCode==Enum.KeyCode.LeftControl then
+		commandBar:CaptureFocus()
+	end
+	
+	if inp.KeyCode==Enum.KeyCode.Space and quicktype.Text~="" then
+		for i=1,#commands do
+			commandBar.Text=string.find(quicktype.Text,commands[i])
+		end
+	end
+	
+	if inp.KeyCode==Enum.KeyCode.Return and commandBar.Text~="" then
+		local text=string.lower(commandBar.Text)
+		commandBar.Text=""
+		for i=1,#commands do	
+			
+			if string.find(text,commands[1]) or string.find(text,"ws") then
+				if string.match(text, "%d+") ~= nil then
+					local number=tonumber(string.match(commandBar.Text, "%d+"))
+					plr.Character["Humanoid"]["WalkSpeed"]=number
+					return
+				end
+				
+				
+			elseif string.find(text,commands[2]) or string.find(text,"jp") then
+				if string.match(text, "%d+") ~= nil then
+					local number=tonumber(string.match(commandBar.Text, "%d+"))
+					plr.Character["Humanoid"]["JumpPower"]=number
+					plr.Character["Humanoid"]["JumpHeight"]=number
+					return
+				end
+				
+				
+			elseif string.find(text,commands[3]) or string.find(text,"to") then
+				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
+					local pName=string.lower(players.Name)
+					local pDisplayName=string.lower(players.DisplayName)
+					if string.find(text,pName) or string.find(text,pDisplayName) then
+						print(players.Name)
+						plr.Character:PivotTo(players.Character:GetPivot())
+						return
+					else
+						print("cannot find player")
+					end
+				end
+				
+				
+			elseif string.find(text,commands[4]) and string.find(text,"ctp") then
+				mouse.Button1Down:Connect(function()
+					plr.Character:PivotTo(CFrame.new(mouse.Hit.X,mouse.Hit.Y+5,mouse.Hit.Z))
+				end)
+				return
+					
+					
+			elseif string.find(text,commands[5]) or string.find(text,"re") then
+				plr.Character["Humanoid"]["Health"]=0
+				return
+					
+					
+			elseif string.find(text,commands[6]) then
+				
+				
+				local speed=10
+				
+				if string.match(text, "%d+") ~= nil then
+					local customspeed=tonumber(string.match(commandBar.Text, "%d+"))
+					speed=customspeed
+				end
+				
+				local flyingDirection = Vector3.new(0, 0, 0)
+
+				local function updateFlyingDirection()
+					flyingDirection = Vector3.new(0, 0, 0)
+					if UIS:IsKeyDown(Enum.KeyCode.W) then
+						flyingDirection = flyingDirection + Vector3.new(0, 0, -1)
+					end
+					if UIS:IsKeyDown(Enum.KeyCode.A) then
+						flyingDirection = flyingDirection + Vector3.new(-1, 0, 0)
+					end
+					if UIS:IsKeyDown(Enum.KeyCode.S) then
+						flyingDirection = flyingDirection + Vector3.new(0, 0, 1)
+					end
+					if UIS:IsKeyDown(Enum.KeyCode.D) then
+						flyingDirection = flyingDirection + Vector3.new(1, 0, 0)
+					end
+					if UIS:IsKeyDown(Enum.KeyCode.E) then
+						flyingDirection = flyingDirection + Vector3.new(0, 1, 0)
+					end
+					if UIS:IsKeyDown(Enum.KeyCode.R) then
+						flyingDirection = flyingDirection + Vector3.new(0, -1, 0)
+					end
+					flyingDirection = flyingDirection.Unit
+				end
+
+				UIS.InputBegan:Connect(function(input, gameProcessedEvent)
+					if not gameProcessedEvent then
+						if input.KeyCode == Enum.KeyCode.W or
+							input.KeyCode == Enum.KeyCode.A or
+							input.KeyCode == Enum.KeyCode.S or
+							input.KeyCode == Enum.KeyCode.D or
+							input.KeyCode == Enum.KeyCode.E or
+							input.KeyCode == Enum.KeyCode.R then
+							updateFlyingDirection()
+						end
+					end
+				end)
+
+				UIS.InputEnded:Connect(function(input, gameProcessedEvent)
+					if not gameProcessedEvent then
+						if input.KeyCode == Enum.KeyCode.W or
+							input.KeyCode == Enum.KeyCode.A or
+							input.KeyCode == Enum.KeyCode.S or
+							input.KeyCode == Enum.KeyCode.D then
+							updateFlyingDirection()
+						end
+					end
+				end)
+				
+				game:GetService("RunService").Heartbeat:Connect(function()
+					if flyingDirection.Magnitude > 0 then
+						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+						local speed = 1
+						plr.Character:PivotTo(plr.Character.PrimaryPart.CFrame + flyingDirection * speed)
+					end
+				end)
+				return
+					
+			elseif string.find(text,commands[8]) or string.find(text,"rj") then
+				tpService:Teleport(game.PlaceId,plr)
+				
+				tpService.TeleportInitFailed:Connect(function()
+					print("failed")
+				end)
+			elseif string.find(text,commands[9]) or string.find(text,"thirdp") then
+				task.spawn(function()
+					plr.CameraMode=Enum.CameraMode.Classic
+					plr.CameraMinZoomDistance=20
+					plr.CameraMaxZoomDistance=100
+				end)
+				return
+								
+			elseif string.find(text,commands[10]) or string.find(text,"firstp") then
+				task.spawn(function()
+					plr.CameraMode=Enum.CameraMode.LockFirstPerson
+				end)
+				return
+			end
+		end
+	end
+end)
