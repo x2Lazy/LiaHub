@@ -19,7 +19,7 @@ local UIS=game:GetService("UserInputService")
 local mouse=plr:GetMouse()
 local tpService=game:GetService("TeleportService")
 local chat=game:GetService("Chat")
-local cam=workspace.CurrentCamera
+local cam=workspace.CurrentCamera or workspace:FindFirstChild("Camera")
 
 local commands={
 	"walkspeed",
@@ -193,6 +193,7 @@ hubversion.TextColor3=Color3.fromRGB(255,255,255)
 hubversion.Font=Enum.Font.Merriweather
 hubversion.FontFace.Bold=true
 hubversion.Text=VERSION
+hubversion.TextTransparency=1
 
 task.wait(1)
 
@@ -221,6 +222,8 @@ end
 
 task.wait(2)
 
+local fadeIn=ts:Create(hubversion,TweenInfo.new(1),{TextTransparency=0})
+fadeIn:Play()
 for i,commandBarGui in pairs(LiaHub:GetChildren()) do
 	if commandBarGui.Name=="CommandBar" then
 		local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{BackgroundTransparency=.65})
@@ -525,7 +528,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 			elseif string.find(com1,commands[9]) or com1=="thirdp" then --Third Person
 				task.spawn(function()
 					plr.CameraMode=Enum.CameraMode.Classic
-					plr.CameraMinZoomDistance=20
+					plr.CameraMinZoomDistance=1
 					plr.CameraMaxZoomDistance=100
 				end)
 				return
@@ -551,6 +554,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 			elseif string.find(com1,commands[12]) or com1=="view" then
 				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
 					if players.Name==com2 then
+						repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
 						cam.CameraSubject=players.Character
 					end
 				end
@@ -559,11 +563,13 @@ UIS.InputBegan:Connect(function(inp,gPE)
 			elseif string.find(com1,commands[12]) or com2=="random" then
 				local p=game:GetService("Players"):GetPlayers()
 				local randomplayer=p[math.random(1,#p)]
-
+				
+				repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
 				cam.CameraSubject=randomplayer.Character
 				return
 					
 			elseif string.find(com1,commands[13]) or com1=="unview" then
+				repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
 				cam.CameraSubject=plr.Character
 			end
 		end
