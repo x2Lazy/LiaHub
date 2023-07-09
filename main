@@ -1,4 +1,4 @@
---Beta v1
+local VERSION="BETA 1"
 
 if _G.AlreadyLoaded==true then
 	return error("already loaded")
@@ -18,6 +18,8 @@ local ts=game:GetService("TweenService")
 local UIS=game:GetService("UserInputService")
 local mouse=plr:GetMouse()
 local tpService=game:GetService("TeleportService")
+local chat=game:GetService("Chat")
+local cam=workspace.CurrentCamera
 
 local commands={
 	"walkspeed",
@@ -29,20 +31,26 @@ local commands={
 	"unfly",
 	"rejoin",
 	"thirdperson",
-	"firstperson"
+	"firstperson",
+	"say",
+	"see",
+	"unsee"
 }
 
 local commandInfo={
 	" [speed] (ws)",
 	" [power] (jp)",
-	" [player] (to)",
+	" [player] (to) (random)",
 	" (ctp)",
 	" (re)",
 	" [speed]",
 	" [speed]",
 	" (rj)",
 	" (thirdp)",
-	" (firstp)"
+	" (firstp)",
+	" [msg]",
+	"[player] (view) (random)",
+	"(unview)"
 }
 
 local LiaHub=Instance.new("ScreenGui")
@@ -58,6 +66,7 @@ local commandSectionTitle=Instance.new("TextLabel",commandSection)
 local commandSectionTitlePos=Instance.new("IntValue",commandSectionTitle)
 local keybindsHelp=Instance.new("TextLabel",commandBar)
 local quicktype=Instance.new("TextLabel",commandBar)
+local hubversion=Instance.new("TextLabel",commandBar)
 
 
 _G.AlreadyLoaded=true
@@ -70,7 +79,7 @@ else
 	local s,e=pcall(function()
 		LiaHub.Parent=game:GetService("CoreGui")
 	end)
-	
+
 	if s then
 		print("welcome to lia hub")
 	else
@@ -94,7 +103,7 @@ introLogo_Corner.CornerRadius=UDim.new(1,1)
 
 introLogoName.Name="IntroName"
 introLogoName.AnchorPoint=Vector2.new(.5,.5)
-introLogoName.Position=UDim2.new(0.612, 0,0.5, 0)
+introLogoName.Position=UDim2.new(0.579, 0,0.5, 0)
 introLogoName.Size=UDim2.new(0, 312,0, 50)
 introLogoName.BackgroundTransparency=1
 introLogoName.TextTransparency=1
@@ -126,8 +135,8 @@ commandSection.Name="CommandSection"
 commandSection.AnchorPoint=Vector2.new(.5,.5)
 commandSection.BackgroundTransparency=1
 commandSection.BackgroundColor3=Color3.fromRGB(0, 0, 0)
-commandSection.Position=UDim2.new(0.702, 0,0.849, 0)
-commandSection.Size=UDim2.new(0, 135,0, 128)
+commandSection.Position=UDim2.new(0.761, 0,0.86, 0)
+commandSection.Size=UDim2.new(0, 165,0, 167)
 commandSection.ScrollBarImageTransparency=1
 
 commandSection_Stroke.Color=Color3.fromRGB(0, 0, 0)
@@ -139,8 +148,9 @@ commandSectionUiList.SortOrder=Enum.SortOrder.LayoutOrder
 commandSectionTitle.Name="Title"
 commandSectionTitle.AnchorPoint=Vector2.new(.5,.5)
 commandSectionTitle.BackgroundTransparency=1
-commandSectionTitle.Size=UDim2.new(0,124,0,18)
+commandSectionTitle.Size=UDim2.new(0, 153,0, 29)
 commandSectionTitle.Text="Commands"
+commandSectionTitle.TextScaled=true
 commandSectionTitle.TextColor3=Color3.fromRGB(255,255,255)
 commandSectionTitle.Font=Enum.Font.Merriweather
 commandSectionTitle.FontFace.Bold=true
@@ -174,6 +184,15 @@ quicktype.TextTransparency=0
 quicktype.Text=""
 quicktype.TextScaled=true
 
+hubversion.Name="Version"
+hubversion.BackgroundTransparency=1
+hubversion.Position=UDim2.new(0.864, 0,-0.25, 0)
+hubversion.Size=UDim2.new(0.352, 0,0.5, 0)
+hubversion.TextScaled=true
+hubversion.TextColor3=Color3.fromRGB(255,255,255)
+hubversion.Font=Enum.Font.Merriweather
+hubversion.FontFace.Bold=true
+hubversion.Text=VERSION
 
 task.wait(1)
 
@@ -182,7 +201,7 @@ fadeInIntroLogo:Play()
 
 task.wait(1)
 
-local moveIntroLogo=ts:Create(introLogo,TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Position=UDim2.new(0.382, 0,0.5, 0)})
+local moveIntroLogo=ts:Create(introLogo,TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Position=UDim2.new(0.443, 0,0.5, 0)})
 moveIntroLogo:Play()
 task.wait(.1)
 local fadeInLogoName=ts:Create(introLogoName,TweenInfo.new(2),{TextTransparency=0})
@@ -206,7 +225,7 @@ for i,commandBarGui in pairs(LiaHub:GetChildren()) do
 	if commandBarGui.Name=="CommandBar" then
 		local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{BackgroundTransparency=.65})
 		fadeIn:Play()
-		
+
 		for i,c in pairs(commandBarGui:GetChildren()) do
 			if c:IsA("UIStroke") then
 				local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{Transparency=0})
@@ -233,7 +252,7 @@ local openCommandSection=false
 local function sort(a, b)
 	local posA = a:FindFirstChild("Pos")
 	local posB = b:FindFirstChild("Pos")
-	
+
 	if posA and posB then
 		return posA.Value < posB.Value
 	else
@@ -245,21 +264,22 @@ local c={}
 for i=1,#commands do
 	local newCommand=Instance.new("TextLabel")
 	local newCommandPos=Instance.new("IntValue",newCommand)
-	
+
 	newCommandPos.Name="Pos"
 	newCommandPos.Value=i+1
-	
+
 	newCommand.AnchorPoint=Vector2.new(.5,.5)
 	newCommand.BackgroundTransparency=1
-	newCommand.Size=UDim2.new(0,124,0,18)
+	newCommand.Size=UDim2.new(0, 153,0, 29)
 	newCommand.Name=commands[i]
 	newCommand.Text=commands[i]..commandInfo[i]
+	newCommand.TextScaled=true
 	newCommand.TextColor3=Color3.fromRGB(255,255,255)
 	newCommand.Font=Enum.Font.Merriweather
 	newCommand.FontFace.Bold=true
 	newCommand.TextTransparency=1
 	newCommand.TextStrokeTransparency=0
-	
+
 	table.insert(c,newCommand)
 end
 
@@ -346,44 +366,54 @@ UIS.InputBegan:Connect(function(inp,gPE)
 			end
 		end
 	end
-	
+
 	if not gPE and inp.KeyCode==Enum.KeyCode.LeftControl then
 		commandBar:CaptureFocus()
 	end
-	
-	if inp.KeyCode == Enum.KeyCode.LeftShift and quicktype.Text ~= nil and quicktype.Text ~= "" then
+
+	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" then
 		for i = 1, #commands do
 			if string.find(quicktype.Text, commands[i]) then
-				commandBar.Text = commands[i]
+				commandBar.Text = commands[i].." "
+				commandBar:ReleaseFocus()
+				commandBar:CaptureFocus()
 				break
 			end
 		end
 	end
 
-	
+
 	if inp.KeyCode==Enum.KeyCode.Return and commandBar.Text~="" then
 		local text=string.lower(commandBar.Text)
+		local splittext=string.split(text," ")
+		local com1=splittext[1]
+		local com2=splittext[2]
+		
+		print(com1)
+		print(com2)
+		
 		commandBar.Text=""
 		for i=1,#commands do	
-			
-			if string.find(text,commands[1]) or string.find(text,"ws") then
+
+			if string.find(com1,commands[1]) or com1=="ws" then
 				if string.match(text, "%d+") ~= nil then
-					local number=tonumber(string.match(commandBar.Text, "%d+"))
+					local number=tonumber(string.match(com2, "%d+"))
+					print(number)
 					plr.Character["Humanoid"]["WalkSpeed"]=number
 					return
 				end
-				
-				
-			elseif string.find(text,commands[2]) or string.find(text,"jp") then
+
+
+			elseif string.find(com1,commands[2]) or com1=="jp" then
 				if string.match(text, "%d+") ~= nil then
-					local number=tonumber(string.match(commandBar.Text, "%d+"))
+					local number=tonumber(string.match(com2, "%d+"))
 					plr.Character["Humanoid"]["JumpPower"]=number
 					plr.Character["Humanoid"]["JumpHeight"]=number
 					return
 				end
-				
-				
-			elseif string.find(text,commands[3]) or string.find(text,"to") then
+
+
+			elseif string.find(com1,commands[3]) or com1=="to" then
 				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
 					local pName=string.lower(players.Name)
 					local pDisplayName=string.lower(players.DisplayName)
@@ -396,30 +426,37 @@ UIS.InputBegan:Connect(function(inp,gPE)
 					end
 				end
 				
+			elseif string.find(com1,commands[3]) or com2=="random" then
+				local p=game:GetService("Players"):GetPlayers()
+				local randomplayer=p[math.random(1,#p)]
 				
-			elseif string.find(text,commands[4]) and string.find(text,"ctp") then
-				mouse.Button1Down:Connect(function()
-					plr.Character:PivotTo(CFrame.new(mouse.Hit.X,mouse.Hit.Y+5,mouse.Hit.Z))
-				end)
+				plr.Character:PivotTo(randomplayer.Character:GetPivot())
 				return
-					
-					
-			elseif string.find(text,commands[5]) or string.find(text,"re") then
+
+			elseif string.find(com1,commands[4]) or com1=="ctp" then
+				print("ctp")
+				if inp.UserInputType==Enum.UserInputType.MouseButton1 then
+					plr.Character:PivotTo(CFrame.new(mouse.Hit.X,mouse.Hit.Y+5,mouse.Hit.Z))
+				end
+				return
+
+
+			elseif string.find(com1,commands[5]) or com1=="re" then
 				plr.Character["Humanoid"]["Health"]=0
 				return
-					
-					
-			elseif string.find(text,commands[6]) then
-				
+
+
+			elseif string.find(com1,commands[6]) then
+
 				plr.Character["Humanoid"]["PlatformStand"]=false
-				
+
 				local speed=10
-				
-				if string.match(text, "%d+") ~= nil then
-					local customspeed=tonumber(string.match(commandBar.Text, "%d+"))
+
+				if string.match(com2, "%d+") ~= nil then
+					local customspeed=tonumber(string.match(com2, "%d+"))
 					speed=customspeed
 				end
-				
+
 				local flyingDirection = Vector3.new(0, 0, 0)
 
 				local function updateFlyingDirection()
@@ -468,7 +505,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 						end
 					end
 				end)
-				
+
 				game:GetService("RunService").Heartbeat:Connect(function()
 					if flyingDirection.Magnitude > 0 then
 						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
@@ -477,26 +514,57 @@ UIS.InputBegan:Connect(function(inp,gPE)
 					end
 				end)
 				return
-					
-			elseif string.find(text,commands[8]) or string.find(text,"rj") then
+
+			elseif string.find(com1,commands[8]) or com1=="rj" then
 				tpService:Teleport(game.PlaceId,plr)
-				
+
 				tpService.TeleportInitFailed:Connect(function()
 					print("failed")
 				end)
-			elseif string.find(text,commands[9]) or string.find(text,"thirdp") then
+				
+			elseif string.find(com1,commands[9]) or com1=="thirdp" then --Third Person
 				task.spawn(function()
 					plr.CameraMode=Enum.CameraMode.Classic
 					plr.CameraMinZoomDistance=20
 					plr.CameraMaxZoomDistance=100
 				end)
 				return
-								
-			elseif string.find(text,commands[10]) or string.find(text,"firstp") then
+
+			elseif string.find(com1,commands[10]) or com1=="firstp" then --First Person
 				task.spawn(function()
 					plr.CameraMode=Enum.CameraMode.LockFirstPerson
 				end)
 				return
+					
+			elseif string.find(com1,commands[11]) then --Say Something
+				
+				local output=com2
+				local text=""
+				for i=2,#splittext do
+					text=text..splittext[i].." "
+				end
+				
+				
+				chat:Chat(plr.Character["Head"],text)
+				return
+					
+			elseif string.find(com1,commands[12]) or com1=="view" then
+				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
+					if players.Name==com2 then
+						cam.CameraSubject=players.Character
+					end
+				end
+				return
+				
+			elseif string.find(com1,commands[12]) or com2=="random" then
+				local p=game:GetService("Players"):GetPlayers()
+				local randomplayer=p[math.random(1,#p)]
+
+				cam.CameraSubject=randomplayer.Character
+				return
+					
+			elseif string.find(com1,commands[13]) or com1=="unview" then
+				cam.CameraSubject=plr.Character
 			end
 		end
 	end
