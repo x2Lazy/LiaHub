@@ -438,9 +438,9 @@ UIS.InputBegan:Connect(function(inp,gPE)
 
 			elseif string.find(com1,commands[4]) or com1=="ctp" then
 				print("ctp")
-				if inp.UserInputType==Enum.UserInputType.MouseButton1 then
+				mouse.Button1Down:Connect(function()
 					plr.Character:PivotTo(CFrame.new(mouse.Hit.X,mouse.Hit.Y+5,mouse.Hit.Z))
-				end
+				end)
 				return
 
 
@@ -553,7 +553,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 					
 			elseif string.find(com1,commands[12]) or com1=="view" then
 				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
-					if players.Name==com2 then
+					if string.lower(players.Name)==com2 then
 						repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
 						cam.CameraSubject=players.Character
 					end
