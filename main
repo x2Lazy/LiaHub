@@ -413,7 +413,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 		commandBar.Text=""
 		for i=1,#commands do	
 
-			if string.find(com1,commands[1]) or com1=="ws" then
+			if com1==commands[1] or com1=="ws" then
 				if string.match(text, "%d+") ~= nil then
 					local number=tonumber(string.match(com2, "%d+"))
 					print(number)
@@ -422,7 +422,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				end
 
 
-			elseif string.find(com1,commands[2]) or com1=="jp" then
+			elseif com1==commands[2] or com1=="jp" then
 				if string.match(text, "%d+") ~= nil then
 					local number=tonumber(string.match(com2, "%d+"))
 					plr.Character["Humanoid"]["JumpPower"]=number
@@ -431,26 +431,26 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				end
 
 
-			elseif string.find(com1,commands[3]) or com1=="to" then
-				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
-					local pName=string.lower(players.Name)
-					local pDisplayName=string.lower(players.DisplayName)
-					if string.find(text,pName) or string.find(text,pDisplayName) then
-						print(players.Name)
-						plr.Character:PivotTo(players.Character:GetPivot())
-						return
-					else
-						print("cannot find player")
+			elseif com1==commands[3] or com1=="to" then
+				if com2=="random" then
+					local p=game:GetService("Players"):GetPlayers()
+					local randomplayer=p[math.random(1,#p)]
+
+					plr.Character:PivotTo(randomplayer.Character:GetPivot())
+				else
+					for i,players in pairs(game:GetService("Players"):GetPlayers()) do
+						local pName=string.lower(players.Name)
+						local pDisplayName=string.lower(players.DisplayName)
+						if string.find(text,pName) or string.find(text,pDisplayName) then
+							print(players.Name)
+							plr.Character:PivotTo(players.Character:GetPivot())
+						else
+							print("cannot find player")
+						end
 					end
 				end
-				
-			elseif com1==commands[3] and com2=="random" then
-				local p=game:GetService("Players"):GetPlayers()
-				local randomplayer=p[math.random(1,#p)]
-				
-				plr.Character:PivotTo(randomplayer.Character:GetPivot())
 				return
-
+				
 			elseif com1==commands[4] or com1=="ctp" then
 				print("ctp")
 				mouse.Button1Down:Connect(function()
@@ -741,8 +741,8 @@ UIS.InputBegan:Connect(function(inp,gPE)
 						local randplayer=p[math.random(1,#p)]
 						task.spawn(function()
 							while task.wait() do
-								local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,randplayer.Character.PrimaryPart.Position)
-								plr.Character:PivotTo(randplayer.Character:GetPivot()*lookat)
+								--local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,randplayer.Character.PrimaryPart.Position)
+								plr.Character:PivotTo(randplayer.Character:GetPivot())
 								if bang==false then
 									break
 								end	
@@ -753,8 +753,8 @@ UIS.InputBegan:Connect(function(inp,gPE)
 							if com2==players.Name:lower() then
 								task.spawn(function()
 									while task.wait() do
-										local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,players.Character.PrimaryPart.Position)
-										plr.Character:PivotTo(players.Character:GetPivot()*lookat)
+										--local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,players.Character.PrimaryPart.Position)
+										plr.Character:PivotTo(players.Character:GetPivot())
 										if bang==false then
 											break
 										end	
