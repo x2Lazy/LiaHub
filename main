@@ -388,7 +388,6 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				print("found "..tostring(sect1))
 				print("found "..tostring(commands[i]))
 				commandBar.Text=commands[i].." "
-				break
 			end
 		end
 	end
