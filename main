@@ -375,6 +375,8 @@ UIS.InputBegan:Connect(function(inp,gPE)
 	if not gPE and inp.KeyCode==Enum.KeyCode.LeftControl then
 		commandBar:CaptureFocus()
 	end
+	
+	print("here")
 
 	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" then
 		print("hit")
