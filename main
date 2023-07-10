@@ -641,15 +641,23 @@ UIS.InputBegan:Connect(function(inp,gPE)
 					highlight.Name="ESP"
 					highlight.FillColor=Color3.fromRGB(255,255,255)
 					highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
-				else
+				elseif com2~="self" and com2~="random" and com2~="" then
 					for i,players in pairs(game:GetService("Players"):GetPlayers()) do
-						if com2==players.Name or com2==players.DisplayName then
+						if com2==players.Name:lower() or com2==players.DisplayName:lower() then
 							local highlight=Instance.new("Highlight",players.Character)
 							highlight.Enabled=true
 							highlight.Name="ESP"
 							highlight.FillColor=Color3.fromRGB(255,255,255)
 							highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
 						end
+					end
+				else
+					for i,players in pairs(game:GetService("Players"):GetPlayers()) do
+						local highlight=Instance.new("Highlight",players.Character)
+						highlight.Enabled=true
+						highlight.Name="ESP"
+						highlight.FillColor=Color3.fromRGB(255,255,255)
+						highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
 					end
 				end
 				
