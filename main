@@ -36,7 +36,9 @@ local commands={
 	"see",
 	"unsee",
 	"esp",
-	"unesp"
+	"unesp",
+	"fling",
+	"unfling"
 }
 
 local commandInfo={
@@ -54,7 +56,9 @@ local commandInfo={
 	" [player] (view) (random)",
 	" (unview)",
 	" [player] (track) (random) (self) ",
-	" (untrack)"
+	" (untrack)",
+	" [speed] (v1)",
+	" "
 }
 
 local LiaHub=Instance.new("ScreenGui")
@@ -295,6 +299,8 @@ for i=1,#c do
 	print(c[i].Name)
 	c[i].Parent=commandSection
 end
+
+local angular
 
 task.spawn(function()
 	while task.wait() do
@@ -659,6 +665,29 @@ UIS.InputBegan:Connect(function(inp,gPE)
 						v:Destroy()
 					end
 				end
+				return
+					
+			elseif com1==commands[16] then
+							
+				if not plr.Character:FindFirstChild("Fling") then				
+					angular=Instance.new("AngularVelocity",plr.Character)
+					angular.Name="Fling"
+					angular.Attachment0=plr.Character["UpperTorso"]["BodyBackAttachment"]
+				end	
+				
+				local speed=10
+
+				if com2~=nil and string.match(com2, "%d+") ~= nil then
+					local customspeed=tonumber(string.match(com2, "%d+"))
+					speed=customspeed
+				end
+
+				angular.MaxTorque=math.huge
+				angular.AngularVelocity=Vector3.new(0,speed,0)
+				return
+			elseif com1==commands[17] then
+				plr.Character:FindFirstChild("Fling"):Destroy()
+				plr.Character.PrimaryPart.AssemblyAngularVelocity=Vector3.new(0,0,0)
 				return
 			end
 		end
