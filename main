@@ -377,6 +377,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 	end
 
 	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" then
+		print("hit")
 		for i = 1, #commands do
 			local splitSect=quicktype.Text:split(" ")
 			local sect1=splitSect[1]
@@ -627,6 +628,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				return
 					
 			elseif com1==commands[14] or com1=="track" then
+				print("tracking")
 				if com2=="random" then
 					local p=game:GetService("Players"):GetPlayers()
 					local randplayer=p[math.random(1,#p)]
@@ -642,7 +644,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 					highlight.Name="ESP"
 					highlight.FillColor=Color3.fromRGB(255,255,255)
 					highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
-				elseif com2~="self" and com2~="random" and com2~="" then
+				elseif com2~="self" and com2~="random" and com2~=nil then
 					for i,players in pairs(game:GetService("Players"):GetPlayers()) do
 						if com2==players.Name:lower() or com2==players.DisplayName:lower() then
 							local highlight=Instance.new("Highlight",players.Character)
