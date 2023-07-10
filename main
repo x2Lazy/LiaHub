@@ -371,7 +371,8 @@ UIS.InputBegan:Connect(function(inp,gPE)
 		commandBar:CaptureFocus()
 	end
 
-	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" then
+	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= "" then
+		print("hit")
 		for i = 1, #commands do
 			local splitSect=quicktype.Text:split(" ")
 			local sect1=splitSect[1]
@@ -385,8 +386,6 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				commandBar.Text=commands[i].." "
 			end
 		end
-	else
-		print("error")
 	end
 
 
