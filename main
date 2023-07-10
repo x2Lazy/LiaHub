@@ -296,16 +296,11 @@ for i=1,#c do
 	c[i].Parent=commandSection
 end
 
-
-function walkspeed()
-	print("walkspeed")
-end
-
 task.spawn(function()
 	while task.wait() do
 		if commandBar.Text~="" then
 			local searchText = string.lower(commandBar.Text)
-			local matchingCommand = nil
+			local matchingCommand=nil
 
 			for i = 1, #commands do
 				if string.sub(commands[i], 1, #searchText) == searchText then
@@ -375,11 +370,8 @@ UIS.InputBegan:Connect(function(inp,gPE)
 	if not gPE and inp.KeyCode==Enum.KeyCode.LeftControl then
 		commandBar:CaptureFocus()
 	end
-	
-	print("here")
 
 	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" then
-		print("hit")
 		for i = 1, #commands do
 			local splitSect=quicktype.Text:split(" ")
 			local sect1=splitSect[1]
@@ -391,10 +383,10 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				print("found "..tostring(sect1))
 				print("found "..tostring(commands[i]))
 				commandBar.Text=commands[i].." "
-			else
-				print("no")
 			end
 		end
+	else
+		print("error")
 	end
 
 
