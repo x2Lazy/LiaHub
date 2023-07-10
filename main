@@ -34,7 +34,9 @@ local commands={
 	"firstperson",
 	"say",
 	"see",
-	"unsee"
+	"unsee",
+	"esp",
+	"unesp"
 }
 
 local commandInfo={
@@ -44,13 +46,15 @@ local commandInfo={
 	" (ctp)",
 	" (re)",
 	" [speed]",
-	" [speed]",
+	" ",
 	" (rj)",
 	" (thirdp)",
 	" (firstp)",
 	" [msg]",
-	"[player] (view) (random)",
-	"(unview)"
+	" [player] (view) (random)",
+	" (unview)",
+	" [player] (track) (random) (self) ",
+	" (untrack)"
 }
 
 local LiaHub=Instance.new("ScreenGui")
@@ -67,7 +71,6 @@ local commandSectionTitlePos=Instance.new("IntValue",commandSectionTitle)
 local keybindsHelp=Instance.new("TextLabel",commandBar)
 local quicktype=Instance.new("TextLabel",commandBar)
 local hubversion=Instance.new("TextLabel",commandBar)
-
 
 _G.AlreadyLoaded=true
 
@@ -93,8 +96,8 @@ LiaHub.ResetOnSpawn=false
 
 introLogo.Name="IntroLogo"
 introLogo.AnchorPoint=Vector2.new(.5,.5)
-introLogo.Position=UDim2.new(.5,0,.5,0)
-introLogo.Size=UDim2.new(0,100,0,100)
+introLogo.Position=UDim2.new(0.5, 0,0.5, 0)
+introLogo.Size=UDim2.new(0.066, 0,0.146, 0)
 introLogo.BackgroundTransparency=1
 introLogo.ImageTransparency=1
 introLogo.Image="rbxassetid://13991323244"
@@ -103,8 +106,8 @@ introLogo_Corner.CornerRadius=UDim.new(1,1)
 
 introLogoName.Name="IntroName"
 introLogoName.AnchorPoint=Vector2.new(.5,.5)
-introLogoName.Position=UDim2.new(0.579, 0,0.5, 0)
-introLogoName.Size=UDim2.new(0, 312,0, 50)
+introLogoName.Position=UDim2.new(0.585, 0,0.499, 0)
+introLogoName.Size=UDim2.new(0.206, 0,0.073, 0)
 introLogoName.BackgroundTransparency=1
 introLogoName.TextTransparency=1
 introLogoName.Text="Lia Hub"
@@ -118,8 +121,8 @@ commandBar.Name="CommandBar"
 commandBar.AnchorPoint=Vector2.new(.5,.5)
 commandBar.BackgroundTransparency=1
 commandBar.BackgroundColor3=Color3.fromRGB(0, 0, 0)
-commandBar.Position=UDim2.new(0.881, 0,0.931, 0)
-commandBar.Size=UDim2.new(0,176,0,20)
+commandBar.Position=UDim2.new(0.917, 0,0.89, 0)
+commandBar.Size=UDim2.new(0.116, 0,0.045, 0)
 commandBar.TextScaled=true
 commandBar.FontFace.Bold=true
 commandBar.Font=Enum.Font.Merriweather
@@ -135,8 +138,8 @@ commandSection.Name="CommandSection"
 commandSection.AnchorPoint=Vector2.new(.5,.5)
 commandSection.BackgroundTransparency=1
 commandSection.BackgroundColor3=Color3.fromRGB(0, 0, 0)
-commandSection.Position=UDim2.new(0.761, 0,0.86, 0)
-commandSection.Size=UDim2.new(0, 165,0, 167)
+commandSection.Position=UDim2.new(0.789, 0,0.826, 0)
+commandSection.Size=UDim2.new(0.109, 0,0.244, 0)
 commandSection.ScrollBarImageTransparency=1
 
 commandSection_Stroke.Color=Color3.fromRGB(0, 0, 0)
@@ -148,7 +151,7 @@ commandSectionUiList.SortOrder=Enum.SortOrder.LayoutOrder
 commandSectionTitle.Name="Title"
 commandSectionTitle.AnchorPoint=Vector2.new(.5,.5)
 commandSectionTitle.BackgroundTransparency=1
-commandSectionTitle.Size=UDim2.new(0, 153,0, 29)
+commandSectionTitle.Size=UDim2.new(0, 145,0, 29)
 commandSectionTitle.Text="Commands"
 commandSectionTitle.TextScaled=true
 commandSectionTitle.TextColor3=Color3.fromRGB(255,255,255)
@@ -202,7 +205,7 @@ fadeInIntroLogo:Play()
 
 task.wait(1)
 
-local moveIntroLogo=ts:Create(introLogo,TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Position=UDim2.new(0.443, 0,0.5, 0)})
+local moveIntroLogo=ts:Create(introLogo,TweenInfo.new(1,Enum.EasingStyle.Sine,Enum.EasingDirection.InOut),{Position=UDim2.new(0.4, 0,0.5, 0)})
 moveIntroLogo:Play()
 task.wait(.1)
 local fadeInLogoName=ts:Create(introLogoName,TweenInfo.new(2),{TextTransparency=0})
@@ -273,7 +276,7 @@ for i=1,#commands do
 
 	newCommand.AnchorPoint=Vector2.new(.5,.5)
 	newCommand.BackgroundTransparency=1
-	newCommand.Size=UDim2.new(0, 153,0, 29)
+	newCommand.Size=UDim2.new(0, 145,0, 29)
 	newCommand.Name=commands[i]
 	newCommand.Text=commands[i]..commandInfo[i]
 	newCommand.TextScaled=true
@@ -307,7 +310,6 @@ task.spawn(function()
 			for i = 1, #commands do
 				if string.sub(commands[i], 1, #searchText) == searchText then
 					matchingCommand=commands[i]
-					break
 				end
 			end
 
@@ -316,7 +318,6 @@ task.spawn(function()
 				for i = 1,#commands do
 					if commands[i]==matchingCommand then
 						commandIndex=i
-						break
 					end
 				end
 
@@ -330,6 +331,7 @@ task.spawn(function()
 	end
 end)
 
+local flying=false
 
 UIS.InputBegan:Connect(function(inp,gPE)
 	if not gPE and inp.KeyCode==Enum.KeyCode.Q then
@@ -376,10 +378,16 @@ UIS.InputBegan:Connect(function(inp,gPE)
 
 	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" then
 		for i = 1, #commands do
-			if string.find(quicktype.Text, commands[i]) then
-				commandBar.Text = commands[i].." "
-				commandBar:ReleaseFocus()
-				commandBar:CaptureFocus()
+			local splitSect=quicktype.Text:split(" ")
+			local sect1=splitSect[1]
+			local sect2=splitSect[2]
+			
+			if sect1==commands[i] then
+				print(string.match(quicktype.Text, commands[i]), string.find(quicktype.Text, commands[i]))
+				print("found "..tostring(quicktype.Text))
+				print("found "..tostring(sect1))
+				print("found "..tostring(commands[i]))
+				commandBar.Text=commands[i].." "
 				break
 			end
 		end
@@ -449,83 +457,128 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				return
 
 
-			elseif string.find(com1,commands[6]) then
+			elseif com1==commands[6] then
+				if flying==false then
+					flying=true
+					plr.Character.PrimaryPart.Anchored=true
+					plr.Character["Humanoid"]["PlatformStand"]=false
+					
+					
+					local speed=1				
+					local flyingSpeed=.5
 
-				plr.Character["Humanoid"]["PlatformStand"]=false
+					if com2~=nil and string.match(com2, "%d+") ~= nil then
+						local customspeed=tonumber(string.match(com2, "%d+"))
+						speed=customspeed
+					end
 
-				local speed=10
-
-				if string.match(com2, "%d+") ~= nil then
-					local customspeed=tonumber(string.match(com2, "%d+"))
-					speed=customspeed
-				end
-
-				local flyingDirection = Vector3.new(0, 0, 0)
-
-				local function updateFlyingDirection()
-					flyingDirection = Vector3.new(0, 0, 0)
-					if UIS:IsKeyDown(Enum.KeyCode.W) then
-						flyingDirection = flyingDirection + Vector3.new(0, 0, -1)
-					end
-					if UIS:IsKeyDown(Enum.KeyCode.A) then
-						flyingDirection = flyingDirection + Vector3.new(-1, 0, 0)
-					end
-					if UIS:IsKeyDown(Enum.KeyCode.S) then
-						flyingDirection = flyingDirection + Vector3.new(0, 0, 1)
-					end
-					if UIS:IsKeyDown(Enum.KeyCode.D) then
-						flyingDirection = flyingDirection + Vector3.new(1, 0, 0)
-					end
-					if UIS:IsKeyDown(Enum.KeyCode.E) then
-						flyingDirection = flyingDirection + Vector3.new(0, 1, 0)
-					end
-					if UIS:IsKeyDown(Enum.KeyCode.R) then
-						flyingDirection = flyingDirection + Vector3.new(0, -1, 0)
-					end
-					flyingDirection = flyingDirection.Unit
-				end
-
-				UIS.InputBegan:Connect(function(input, gameProcessedEvent)
-					if not gameProcessedEvent then
-						if input.KeyCode == Enum.KeyCode.W or
-							input.KeyCode == Enum.KeyCode.A or
-							input.KeyCode == Enum.KeyCode.S or
-							input.KeyCode == Enum.KeyCode.D or
-							input.KeyCode == Enum.KeyCode.E or
-							input.KeyCode == Enum.KeyCode.R then
-							updateFlyingDirection()
+					local flyingDirection = Vector3.new(0, 0, 0)
+					
+					
+					local function updateFlyingDirection()
+						flyingDirection = Vector3.new(0, 0, 0)
+						while task.wait() do
+							if flying==false then
+								break
+							end
+							
+							if UIS:IsKeyDown(Enum.KeyCode.W) then
+								flyingDirection = flyingDirection + plr.Character.PrimaryPart.CFrame.LookVector
+							end
+							if UIS:IsKeyDown(Enum.KeyCode.A) then
+								flyingDirection = flyingDirection + (-plr.Character.PrimaryPart.CFrame.RightVector)
+							end
+							if UIS:IsKeyDown(Enum.KeyCode.S) then
+								flyingDirection = flyingDirection + (-plr.Character.PrimaryPart.CFrame.LookVector)
+							end
+							if UIS:IsKeyDown(Enum.KeyCode.D) then
+								flyingDirection = flyingDirection + plr.Character.PrimaryPart.CFrame.RightVector
+							end
+							if UIS:IsKeyDown(Enum.KeyCode.E) then
+								flyingDirection = flyingDirection + Vector3.new(0, flyingSpeed, 0)
+							end
+							if UIS:IsKeyDown(Enum.KeyCode.R) then
+								flyingDirection = flyingDirection + Vector3.new(0, -flyingSpeed, 0)
+							end
+							flyingDirection = flyingDirection.Unit
 						end
 					end
-				end)
+					
 
-				UIS.InputEnded:Connect(function(input, gameProcessedEvent)
-					if not gameProcessedEvent then
-						if input.KeyCode == Enum.KeyCode.W or
-							input.KeyCode == Enum.KeyCode.A or
-							input.KeyCode == Enum.KeyCode.S or
-							input.KeyCode == Enum.KeyCode.D then
-							updateFlyingDirection()
+					UIS.InputBegan:Connect(function(input, gameProcessedEvent)
+						if not gameProcessedEvent then
+							if input.KeyCode == Enum.KeyCode.W or
+								input.KeyCode == Enum.KeyCode.A or
+								input.KeyCode == Enum.KeyCode.S or
+								input.KeyCode == Enum.KeyCode.D or
+								input.KeyCode == Enum.KeyCode.E or
+								input.KeyCode == Enum.KeyCode.R then
+								updateFlyingDirection()
+							end
 						end
-					end
-				end)
+					end)
 
-				game:GetService("RunService").Heartbeat:Connect(function()
-					if flyingDirection.Magnitude > 0 then
-						local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
-						local speed = 1
-						plr.Character:PivotTo(plr.Character.PrimaryPart.CFrame + flyingDirection * speed)
-					end
-				end)
+					UIS.InputEnded:Connect(function(input, gameProcessedEvent)
+						if not gameProcessedEvent then
+							if input.KeyCode == Enum.KeyCode.W or
+								input.KeyCode == Enum.KeyCode.A or
+								input.KeyCode == Enum.KeyCode.S or
+								input.KeyCode == Enum.KeyCode.D or
+								input.KeyCode == Enum.KeyCode.E or 
+								input.KeyCode == Enum.KeyCode.R then
+								updateFlyingDirection()
+							end
+						end
+					end)
+					local rse
+					local mMove
+					
+					task.spawn(function()
+						mMove=mouse.Move:Connect(function()
+							local character = plr.Character
+							local primaryPart = character.PrimaryPart
+							
+							local lookVector=mouse.Hit.Position
+							
+							primaryPart.CFrame = CFrame.lookAt(primaryPart.Position, lookVector)
+							
+							character:PivotTo(primaryPart.CFrame)
+						end)
+					end)
+					
+					task.spawn(function()
+						rse=game:GetService("RunService").Heartbeat:Connect(function()
+							if flyingDirection.Magnitude > 0 then
+								for i,anims in pairs(plr.Character["Humanoid"]["Animator"]:GetPlayingAnimationTracks()) do
+									anims:Stop()
+								end
+								local humanoid = plr.Character:FindFirstChildOfClass("Humanoid")
+								
+								plr.Character:PivotTo(plr.Character.PrimaryPart.CFrame + flyingDirection * speed)
+							end
+						end)
+					end)
+					
+					repeat task.wait() until flying==false
+					rse:Disconnect()
+					mMove:Disconnect()
+					return
+				end
 				return
+					
+			elseif com1==commands[7] then
+				print("unflying")
+				if flying==true then
+					flying=false
+					plr.Character.PrimaryPart.Anchored=false
+					return
+				end
 
-			elseif string.find(com1,commands[8]) or com1=="rj" then
+			elseif com1==commands[8] or com1=="rj" then
 				tpService:Teleport(game.PlaceId,plr)
-
-				tpService.TeleportInitFailed:Connect(function()
-					print("failed")
-				end)
-				
-			elseif string.find(com1,commands[9]) or com1=="thirdp" then --Third Person
+				return
+								
+			elseif com1==commands[9] or com1=="thirdp" then --Third Person
 				task.spawn(function()
 					plr.CameraMode=Enum.CameraMode.Classic
 					plr.CameraMinZoomDistance=1
@@ -533,13 +586,13 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				end)
 				return
 
-			elseif string.find(com1,commands[10]) or com1=="firstp" then --First Person
+			elseif com1==commands[10] or com1=="firstp" then --First Person
 				task.spawn(function()
 					plr.CameraMode=Enum.CameraMode.LockFirstPerson
 				end)
 				return
 					
-			elseif string.find(com1,commands[11]) then --Say Something
+			elseif com1==commands[11] then --Say Something
 				
 				local output=com2
 				local text=""
@@ -551,26 +604,63 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				chat:Chat(plr.Character["Head"],text)
 				return
 					
-			elseif string.find(com1,commands[12]) or com1=="view" then
+			elseif com1==commands[12] or com1=="view" then --View Character
 				for i,players in pairs(game:GetService("Players"):GetPlayers()) do
-					if string.lower(players.Name)==com2 then
+					if com2==players.Name:lower() or com2==players.DisplayName:lower() then
 						repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
+						print(players.Name)
 						cam.CameraSubject=players.Character
+					elseif com2=="random" then
+						local p=game:GetService("Players"):GetPlayers()
+						local randomplayer=p[math.random(1,#p)]
+
+						repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
+						cam.CameraSubject=randomplayer.Character
 					end
 				end
 				return
-				
-			elseif string.find(com1,commands[12]) or com2=="random" then
-				local p=game:GetService("Players"):GetPlayers()
-				local randomplayer=p[math.random(1,#p)]
-				
-				repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
-				cam.CameraSubject=randomplayer.Character
-				return
 					
-			elseif string.find(com1,commands[13]) or com1=="unview" then
+			elseif com1==commands[13] or com1=="unview" then --Unview Character
 				repeat task.wait() cam.CameraType=Enum.CameraType.Scriptable until cam.CameraType==Enum.CameraType.Scriptable
 				cam.CameraSubject=plr.Character
+				return
+					
+			elseif com1==commands[14] or com1=="track" then
+				if com2=="random" then
+					local p=game:GetService("Players"):GetPlayers()
+					local randplayer=p[math.random(1,#p)]
+					
+					local highlight=Instance.new("Highlight",randplayer.Character)
+					highlight.Enabled=true
+					highlight.Name="ESP"
+					highlight.FillColor=Color3.fromRGB(255,255,255)
+					highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+				elseif com2=="self" then
+					local highlight=Instance.new("Highlight",plr.Character)
+					highlight.Enabled=true
+					highlight.Name="ESP"
+					highlight.FillColor=Color3.fromRGB(255,255,255)
+					highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+				else
+					for i,players in pairs(game:GetService("Players"):GetPlayers()) do
+						if com2==players.Name or com2==players.DisplayName then
+							local highlight=Instance.new("Highlight",players.Character)
+							highlight.Enabled=true
+							highlight.Name="ESP"
+							highlight.FillColor=Color3.fromRGB(255,255,255)
+							highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+						end
+					end
+				end
+				
+				return
+			elseif com1==commands[15] or com1=="untrack" then
+				for i,v in pairs(workspace:GetDescendants()) do
+					if v:IsA("Highlight") and v.Name=="ESP" then
+						v:Destroy()
+					end
+				end
+				return
 			end
 		end
 	end
