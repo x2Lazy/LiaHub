@@ -730,6 +730,12 @@ UIS.InputBegan:Connect(function(inp,gPE)
 				if bang==false then
 					bang=true
 					
+					for i,parts in pairs(plr.Character:GetChildren()) do
+						if parts:IsA("MeshPart") or parts:IsA("Part") then
+							parts.CanCollide=false
+						end
+					end
+					
 					if com2=="random" then
 						local p=game:GetService("Players"):GetPlayers()
 						local randplayer=p[math.random(1,#p)]
