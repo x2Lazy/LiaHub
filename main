@@ -746,6 +746,9 @@ UIS.InputBegan:Connect(function(inp,gPE)
 								--local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,randplayer.Character.PrimaryPart.Position)
 								plr.Character:PivotTo(randplayer.Character:GetPivot()+Vector3.new(-randplayer.Character.PrimaryPart.CFrame.LookVector.X-offset,1,-randplayer.Character.PrimaryPart.CFrame.LookVector.Z-offset))
 								if bang==false or plr.Character["Humanoid"]["Health"]==0 then
+									if bang~=false then
+										bang=false
+									end
 									break
 								end	
 							end
@@ -758,6 +761,9 @@ UIS.InputBegan:Connect(function(inp,gPE)
 										--local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,players.Character.PrimaryPart.Position)
 										plr.Character:PivotTo(players.Character:GetPivot()+Vector3.new(-players.Character.PrimaryPart.CFrame.LookVector.X-offset,.3,-players.Character.PrimaryPart.CFrame.LookVector.Z-offset))
 										if bang==false or plr.Character["Humanoid"]["Health"]==0 then
+											if bang~=false then
+												bang=false
+											end
 											break
 										end	
 									end
