@@ -742,7 +742,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 						task.spawn(function()
 							while task.wait() do
 								--local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,randplayer.Character.PrimaryPart.Position)
-								plr.Character:PivotTo(randplayer.Character:GetPivot()+(-randplayer.Character.PrimaryPart.CFrame.LookVector))
+								plr.Character:PivotTo(randplayer.Character:GetPivot()+Vector3.new(-randplayer.Character.PrimaryPart.CFrame.LookVector.X,1,-randplayer.Character.PrimaryPart.CFrame.LookVector.Z))
 								if bang==false then
 									break
 								end	
@@ -754,7 +754,7 @@ UIS.InputBegan:Connect(function(inp,gPE)
 								task.spawn(function()
 									while task.wait() do
 										--local lookat=CFrame.lookAt(plr.Character.PrimaryPart.Position,players.Character.PrimaryPart.Position)
-										plr.Character:PivotTo(players.Character:GetPivot()+(-players.Character.PrimaryPart.CFrame.LookVector))
+										plr.Character:PivotTo(players.Character:GetPivot()+Vector3.new(-players.Character.PrimaryPart.CFrame.LookVector.X,1,-players.Character.PrimaryPart.CFrame.LookVector.Z))
 										if bang==false then
 											break
 										end	
