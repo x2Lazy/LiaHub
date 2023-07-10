@@ -370,19 +370,14 @@ UIS.InputBegan:Connect(function(inp,gPE)
 	if not gPE and inp.KeyCode==Enum.KeyCode.LeftControl then
 		commandBar:CaptureFocus()
 	end
-
-	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= "" then
-		print("hit")
+	
+	if inp.KeyCode==Enum.KeyCode.LeftAlt and quicktype.Text ~= nil and quicktype.Text ~= "" and commandBar:IsFocused()==true then
 		for i = 1, #commands do
 			local splitSect=quicktype.Text:split(" ")
 			local sect1=splitSect[1]
 			local sect2=splitSect[2]
-			
+
 			if sect1==commands[i] then
-				print(string.match(quicktype.Text, commands[i]), string.find(quicktype.Text, commands[i]))
-				print("found "..tostring(quicktype.Text))
-				print("found "..tostring(sect1))
-				print("found "..tostring(commands[i]))
 				commandBar.Text=commands[i].." "
 			end
 		end
