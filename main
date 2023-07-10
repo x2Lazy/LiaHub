@@ -241,17 +241,12 @@ task.wait(2)
 
 local fadeIn=ts:Create(hubversion,TweenInfo.new(1),{TextTransparency=0})
 fadeIn:Play()
+local fadeIn=ts:Create(commandBar_Stroke,TweenInfo.new(1),{Transparency=0})
+fadeIn:Play()
 for i,commandBarGui in pairs(LiaHub:GetChildren()) do
 	if commandBarGui.Name=="CommandBar" then
 		local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{BackgroundTransparency=.65})
 		fadeIn:Play()
-
-		for i,c in pairs(commandBarGui:GetChildren()) do
-			if c:IsA("UIStroke") then
-				local fadeIn=ts:Create(commandBarGui,TweenInfo.new(1),{Transparency=0})
-				fadeIn:Play()
-			end
-		end
 	end
 end
 
